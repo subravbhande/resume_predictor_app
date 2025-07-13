@@ -222,15 +222,61 @@ def main():
             st.bar_chart(df['length'], use_container_width=True)
         else:
             st.info("Upload at least one resume to see analytics.")
+elif menu_option == "Career Booster Toolkit":
+    st.subheader("🚀 Career Booster Toolkit")
+    st.markdown("Comprehensive resources to boost your career growth, learning, and visibility.")
 
-    elif menu_option == "Career Booster Toolkit":
-        st.subheader("🚀 Career Booster Toolkit")
-        st.markdown("Comprehensive resources to boost your career growth, learning, and visibility.")
-        with st.expander("🎓 Skill Development Platforms"):
-            st.markdown("- [Coursera](https://coursera.org)")
-            st.markdown("- [Udemy](https://udemy.com)")
-            st.markdown("- [LinkedIn Learning](https://linkedin.com/learning)")
-            st.markdown("- [Kaggle Courses](https://www.kaggle.com/learn)")
+    # 🎓 Skill Development Platforms
+    with st.expander("🎓 Skill Development Platforms"):
+        st.markdown("- [Coursera](https://coursera.org)")
+        st.markdown("- [Udemy](https://udemy.com)")
+        st.markdown("- [LinkedIn Learning](https://linkedin.com/learning)")
+        st.markdown("- [Kaggle Courses](https://www.kaggle.com/learn)")
+        st.markdown("- [edX](https://edx.org)")
+        st.markdown("- [Great Learning](https://www.mygreatlearning.com/)")
+        st.markdown("- [Scaler Topics](https://www.scaler.com/topics/)")
+        st.markdown("- [freeCodeCamp](https://www.freecodecamp.org/)")
+
+    # 📄 Resume Building Tools
+    with st.expander("📄 Resume Building Tools"):
+        st.markdown("- [Zety Resume Builder](https://zety.com/resume-builder)")
+        st.markdown("- [Canva Resume Templates](https://www.canva.com/resumes/)")
+        st.markdown("- [Novoresume](https://novoresume.com/)")
+        st.markdown("- [Kickresume](https://www.kickresume.com/)")
+        st.markdown("- [VisualCV](https://www.visualcv.com/)")
+
+    # 🧭 Career Guidance Platforms
+    with st.expander("🧭 Career Guidance & Exploration"):
+        st.markdown("- [CareerExplorer](https://www.careerexplorer.com/)")
+        st.markdown("- [Truity Career Tests](https://www.truity.com/tests)")
+        st.markdown("- [Mindler](https://www.mindler.com/)")
+        st.markdown("- [MyNextMove](https://www.mynextmove.org/)")
+
+    # 🤖 Mock Interview Platforms
+    with st.expander("🤖 Mock Interviews & Practice"):
+        st.markdown("- [Pramp](https://www.pramp.com/)")
+        st.markdown("- [Interviewing.io](https://interviewing.io/)")
+        st.markdown("- [Exercism](https://exercism.org/)")
+        st.markdown("- [LeetCode Interview Simulator](https://leetcode.com/interview/)")
+        st.markdown("- [HackerRank Interview Prep](https://www.hackerrank.com/interview/interview-preparation-kit)")
+
+    # 🤝 Networking & Communities
+    with st.expander("🤝 Networking & Tech Communities"):
+        st.markdown("- [LinkedIn](https://linkedin.com)")
+        st.markdown("- [GitHub](https://github.com)")
+        st.markdown("- [Stack Overflow](https://stackoverflow.com/)")
+        st.markdown("- [Reddit: r/cscareerquestions](https://www.reddit.com/r/cscareerquestions/)")
+        st.markdown("- [Dev.to](https://dev.to/)")
+
+    # 🧠 AI Career Enhancers
+    with st.expander("🧠 AI Career Enhancers"):
+        st.markdown("- [ChatGPT for Resume Tips](https://chat.openai.com)")
+        st.markdown("- [Rezi AI Resume Writer](https://www.rezi.ai/)")
+        st.markdown("- [Kickresume AI Resume Checker](https://www.kickresume.com/en/ai-resume-checker/)")
+        st.markdown("- [Skillate Resume Parser](https://skillate.com/)")
+
+    st.info("💡 Pro Tip: Bookmark and explore at least one resource from each section every week to stay ahead!")
+
 
     elif menu_option == "Multi-language Support (Coming Soon)":
         st.subheader("🌐 Multi-language Support")

@@ -8,17 +8,12 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# ✅ Debug Message
-# st.write("✅ App loaded successfully!")
-
-# ✅ Stopwords
 stop_words = set(ENGLISH_STOP_WORDS)
 
-# 📊 Global Analytics State
 if 'resume_data' not in st.session_state:
     st.session_state.resume_data = []
 
-# 🩹 Clean Resume Text
+# 🧹 Clean Resume Text
 def cleanResume(txt):
     cleanText = re.sub(r'http\S+\s', ' ', txt)
     cleanText = re.sub(r'RT|cc', ' ', cleanText)
@@ -32,10 +27,10 @@ def cleanResume(txt):
     words = [word for word in words if word not in stop_words and len(word) > 2]
     return ' '.join(words)
 
-# 📄 Extract text from files
+# 📄 File Extraction Functions
 def extract_text_from_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
-    return ' '.join(page.extract_text() for page in pdf_reader.pages)
+    return ' '.join(page.extract_text() or '' for page in pdf_reader.pages)
 
 def extract_text_from_docx(file):
     from docx import Document
@@ -48,7 +43,7 @@ def extract_text_from_txt(file):
     except UnicodeDecodeError:
         return file.read().decode('latin-1')
 
-# 📁 File upload handler
+# 📁 File Upload Handler
 def handle_file_upload(uploaded_file):
     ext = uploaded_file.name.split('.')[-1].lower()
     if ext == 'pdf':
@@ -60,14 +55,21 @@ def handle_file_upload(uploaded_file):
     else:
         raise ValueError("❌ Unsupported file type. Please upload PDF, DOCX, or TXT.")
 
-# 🔮 Predict category
+# ✅ Resume Validator
+def is_valid_resume(text):
+    resume_keywords = ['experience', 'education', 'skills', 'project', 'internship', 'summary', 'objective']
+    text_lower = text.lower()
+    matches = [word for word in resume_keywords if word in text_lower]
+    return len(matches) >= 2  # Require at least 2 keywords to treat as resume
+
+# 🔮 Category Predictor
 def predict_category(resume_text):
     cleaned_text = cleanResume(resume_text)
     vectorized_text = tfidf.transform([cleaned_text])
     prediction = svc_model.predict(vectorized_text.toarray())
     return le.inverse_transform(prediction)[0], cleaned_text
 
-# 🧠 Resume suggestions (AI-like rules)
+# 💡 Resume Tips
 def generate_resume_tips(text):
     tips = []
     if len(text.split()) < 150:
@@ -84,7 +86,7 @@ def generate_resume_tips(text):
         tips.append("✅ Your resume looks well structured. Great job!")
     return tips
 
-# 🏆 Resume Score Generator
+# 🏆 Resume Scoring
 def score_resume(text):
     score = 50
     if len(text.split()) > 200:
@@ -97,7 +99,7 @@ def score_resume(text):
         score += 10
     return min(score, 100)
 
-# 🔧 Load model and encoder
+# 🔧 Load Model and Encoder
 tfidf = pickle.load(open('tfidf.pkl', 'rb'))
 svc_model = pickle.load(open('clf.pkl', 'rb'))
 le = pickle.load(open('encoder.pkl', 'rb'))
@@ -107,7 +109,6 @@ def main():
     st.set_page_config(page_title="Resume Category Prediction", page_icon="📄", layout="wide")
     st.title("📄 Resume Category Prediction App")
 
-    # Sidebar Navigation
     with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/194/194931.png", width=100)
         st.markdown("### Hello! Welcome to the Resume App 👋")
@@ -121,11 +122,11 @@ def main():
         ])
 
         st.markdown("---")
-        st.markdown("📌 Project by: [Subrav bhande](https://github.com/subravbhande)")
+        st.markdown("📌 Project by: [Subrav Bhande](https://github.com/subravbhande)")
         st.markdown("📁 [GitHub Repo](https://github.com/subravbhande/resume-predictor-app)")
         st.markdown("<center>Made with ❤️ for you</center>", unsafe_allow_html=True)
 
-        # Feedback
+        # Feedback Section
         with st.expander("📬 Give Feedback"):
             if "feedback_submitted" not in st.session_state:
                 st.session_state.feedback_submitted = False
@@ -159,7 +160,7 @@ def main():
             else:
                 st.success("🎉 Thank you! Your feedback has been submitted.")
 
-    # Section: Resume Analysis
+    # 🧾 Resume Analysis Section
     if menu_option == "Resume Analysis":
         st.subheader("📁 Upload your resume below")
         uploaded_file = st.file_uploader("Drag and drop your file here", type=["pdf", "docx", "txt"])
@@ -167,6 +168,12 @@ def main():
         if uploaded_file is not None:
             try:
                 resume_text = handle_file_upload(uploaded_file)
+
+                # 🚫 Check if document looks like a resume
+                if not is_valid_resume(resume_text):
+                    st.error("🚫 This document doesn't appear to be a resume. Please upload a valid resume.")
+                    return
+
                 category, cleaned_text = predict_category(resume_text)
                 tips = generate_resume_tips(resume_text)
                 score = score_resume(resume_text)
@@ -201,12 +208,10 @@ def main():
         data = st.session_state.resume_data
         if data:
             df = pd.DataFrame(data)
-
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("📄 Total Resumes Uploaded", len(df))
                 st.metric("🧮 Average Resume Score", f"{df['score'].mean():.2f}/100")
-
             with col2:
                 fig, ax = plt.subplots()
                 category_counts = df['category'].value_counts()
@@ -214,7 +219,6 @@ def main():
                 ax.set_title("Top Predicted Categories")
                 ax.set_ylabel("Count")
                 st.pyplot(fig)
-
             st.bar_chart(df['length'], use_container_width=True)
         else:
             st.info("Upload at least one resume to see analytics.")
@@ -225,7 +229,8 @@ def main():
         with st.expander("🎓 Skill Development Platforms"):
             st.markdown("- [Coursera](https://coursera.org)")
             st.markdown("- [Udemy](https://udemy.com)")
-        # Add other resources as needed...
+            st.markdown("- [LinkedIn Learning](https://linkedin.com/learning)")
+            st.markdown("- [Kaggle Courses](https://www.kaggle.com/learn)")
 
     elif menu_option == "Multi-language Support (Coming Soon)":
         st.subheader("🌐 Multi-language Support")

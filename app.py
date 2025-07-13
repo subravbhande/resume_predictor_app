@@ -8,6 +8,9 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# ✅ Debug Message
+# st.write("✅ App loaded successfully!")
+
 # ✅ Stopwords
 stop_words = set(ENGLISH_STOP_WORDS)
 
@@ -64,7 +67,7 @@ def predict_category(resume_text):
     prediction = svc_model.predict(vectorized_text.toarray())
     return le.inverse_transform(prediction)[0], cleaned_text
 
-# 🧐 Resume suggestions (AI-like rules)
+# 🧠 Resume suggestions (AI-like rules)
 def generate_resume_tips(text):
     tips = []
     if len(text.split()) < 150:
@@ -81,7 +84,7 @@ def generate_resume_tips(text):
         tips.append("✅ Your resume looks well structured. Great job!")
     return tips
 
-# 📈 Resume Scoring System
+# 🏆 Resume Score Generator
 def score_resume(text):
     score = 50
     if len(text.split()) > 200:
@@ -94,7 +97,7 @@ def score_resume(text):
         score += 10
     return min(score, 100)
 
-# 🧐 Load model and encoder
+# 🔧 Load model and encoder
 tfidf = pickle.load(open('tfidf.pkl', 'rb'))
 svc_model = pickle.load(open('clf.pkl', 'rb'))
 le = pickle.load(open('encoder.pkl', 'rb'))
@@ -122,7 +125,7 @@ def main():
         st.markdown("📁 [GitHub Repo](https://github.com/subravbhande/resume-predictor-app)")
         st.markdown("<center>Made with ❤️ for you</center>", unsafe_allow_html=True)
 
-        # Feedback last
+        # Feedback
         with st.expander("📬 Give Feedback"):
             if "feedback_submitted" not in st.session_state:
                 st.session_state.feedback_submitted = False
@@ -200,7 +203,6 @@ def main():
             df = pd.DataFrame(data)
 
             col1, col2 = st.columns(2)
-
             with col1:
                 st.metric("📄 Total Resumes Uploaded", len(df))
                 st.metric("🧮 Average Resume Score", f"{df['score'].mean():.2f}/100")
@@ -220,64 +222,14 @@ def main():
     elif menu_option == "Career Booster Toolkit":
         st.subheader("🚀 Career Booster Toolkit")
         st.markdown("Comprehensive resources to boost your career growth, learning, and visibility.")
-
         with st.expander("🎓 Skill Development Platforms"):
             st.markdown("- [Coursera](https://coursera.org)")
-            st.markdown("- [edX](https://edx.org)")
             st.markdown("- [Udemy](https://udemy.com)")
-            st.markdown("- [freeCodeCamp](https://www.freecodecamp.org/)")
-            st.markdown("- [Kaggle Learn](https://www.kaggle.com/learn)")
-
-        with st.expander("💼 Resume & Portfolio Builders"):
-            st.markdown("- [Canva Resume Builder](https://www.canva.com/resumes/)")
-            st.markdown("- [Novoresume](https://novoresume.com/)")
-            st.markdown("- [Zety](https://zety.com/resume-builder)")
-            st.markdown("- [GitHub Portfolio Guide](https://github.com/emmabostian/developer-portfolios)")
-            st.markdown("- [Notion Portfolio Template](https://www.notion.so)")
-
-        with st.expander("🧠 Mock Interviews & Practice"):
-            st.markdown("- [InterviewBit](https://www.interviewbit.com/)")
-            st.markdown("- [Pramp](https://www.pramp.com/)")
-            st.markdown("- [Exercism](https://exercism.io/)")
-            st.markdown("- [GeeksforGeeks Practice](https://practice.geeksforgeeks.org/)")
-
-        with st.expander("🗂️ Contribute to Open Source"):
-            st.markdown("- [First Contributions](https://firstcontributions.github.io/)")
-            st.markdown("- [Up-for-Grabs](https://up-for-grabs.net/)")
-            st.markdown("- [CodeTriage](https://www.codetriage.com/)")
-            st.markdown("- [EddieHub](https://github.com/EddieHubCommunity)")
-
-        with st.expander("🌐 Build Your Network"):
-            st.markdown("- [LinkedIn](https://linkedin.com)")
-            st.markdown("- [AngelList](https://angel.co/)")
-            st.markdown("- [Twitter - Dev Community](https://twitter.com/search?q=developer)")
-            st.markdown("- [Polywork](https://www.polywork.com/)")
-
-        with st.expander("📈 Trending Tech & Career Insights"):
-            st.markdown("- [Stack Overflow Survey](https://insights.stackoverflow.com/survey)")
-            st.markdown("- [GitHub Octoverse](https://octoverse.github.com/)")
-            st.markdown("- [TechRadar](https://www.techradar.com/)")
-            st.markdown("- [Google Trends](https://trends.google.com/)")
-
-        with st.expander("🤖 AI-Powered Career Advice Tools"):
-            st.markdown("- [ChatGPT](https://chat.openai.com)")
-            st.markdown("- [Jasper.ai](https://www.jasper.ai/)")
-            st.markdown("- [Kickresume](https://www.kickresume.com/)")
-            st.markdown("- [Resume Worded](https://www.resumeworded.com/)")
-
-        with st.expander("📆 Productivity & Planning Tools"):
-            st.markdown("- [Notion](https://www.notion.so)")
-            st.markdown("- [Trello](https://trello.com/)")
-            st.markdown("- [Pomofocus](https://pomofocus.io/)")
-            st.markdown("- [Todoist](https://todoist.com/)")
-
-        st.markdown("---")
-        st.info("💡 Tip: Bookmark this toolkit or export it to Notion/Google Keep to use daily.")
+        # Add other resources as needed...
 
     elif menu_option == "Multi-language Support (Coming Soon)":
         st.subheader("🌐 Multi-language Support")
-        st.markdown("This feature is coming soon! You'll be able to select and analyze resumes in different languages.")
-        st.selectbox("Choose your preferred language:", ["English", "Hindi", "Tamil", "Telugu", "Marathi"], index=0, disabled=True)
+        st.markdown("This feature is coming soon!")
 
 if __name__ == '__main__':
     main()

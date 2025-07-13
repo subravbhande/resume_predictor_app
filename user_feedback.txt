@@ -1,0 +1,22 @@
+User: Student subrav
+Rating: ⭐⭐
+Liked: Resume Tips, UI Design
+Feedback: thank you
+
+------------------------------------------------------------
+User: Student
+Rating: ⭐⭐
+Liked: Ease of Use
+Feedback: good
+------------------------------------------------------------
+Time: 2025-07-12 23:55:38
+User: Student
+Rating: ⭐⭐
+Liked: UI Design
+Feedback: kt
+------------------------------------------------------------
+Time: 2025-07-13 00:12:27
+Rating: ⭐⭐⭐
+Liked: Ease of Use
+Feedback: r
+------------------------------------------------------------

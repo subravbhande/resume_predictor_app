@@ -1,0 +1,1 @@
+clf = pickle.load(open('resume/tfidf.pkl', 'rb'))

@@ -4,12 +4,13 @@ import PyPDF2
 import re
 import datetime
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-from collections import Counter
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# 🔠 Stopwords
 stop_words = set(ENGLISH_STOP_WORDS)
 
+# 📊 Global Analytics
 if 'resume_data' not in st.session_state:
     st.session_state.resume_data = []
 
@@ -27,7 +28,7 @@ def cleanResume(txt):
     words = [word for word in words if word not in stop_words and len(word) > 2]
     return ' '.join(words)
 
-# 📄 File Extraction Functions
+# 📄 File Extraction
 def extract_text_from_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
     return ' '.join(page.extract_text() or '' for page in pdf_reader.pages)
@@ -43,7 +44,7 @@ def extract_text_from_txt(file):
     except UnicodeDecodeError:
         return file.read().decode('latin-1')
 
-# 📁 File Upload Handler
+# 📁 Upload Handler
 def handle_file_upload(uploaded_file):
     ext = uploaded_file.name.split('.')[-1].lower()
     if ext == 'pdf':
@@ -57,12 +58,12 @@ def handle_file_upload(uploaded_file):
 
 # ✅ Resume Validator
 def is_valid_resume(text):
-    resume_keywords = ['experience', 'education', 'skills', 'project', 'internship', 'summary', 'objective']
+    keywords = ['experience', 'education', 'skills', 'project', 'internship', 'summary', 'objective']
     text_lower = text.lower()
-    matches = [word for word in resume_keywords if word in text_lower]
-    return len(matches) >= 2  # Require at least 2 keywords to treat as resume
+    matches = [word for word in keywords if word in text_lower]
+    return len(matches) >= 2
 
-# 🔮 Category Predictor
+# 🔮 Predict Category
 def predict_category(resume_text):
     cleaned_text = cleanResume(resume_text)
     vectorized_text = tfidf.transform([cleaned_text])
@@ -86,7 +87,7 @@ def generate_resume_tips(text):
         tips.append("✅ Your resume looks well structured. Great job!")
     return tips
 
-# 🏆 Resume Scoring
+# 🏆 Resume Score
 def score_resume(text):
     score = 50
     if len(text.split()) > 200:
@@ -99,12 +100,12 @@ def score_resume(text):
         score += 10
     return min(score, 100)
 
-# 🔧 Load Model and Encoder
+# 🔧 Load Model & Encoder
 tfidf = pickle.load(open('tfidf.pkl', 'rb'))
 svc_model = pickle.load(open('clf.pkl', 'rb'))
 le = pickle.load(open('encoder.pkl', 'rb'))
 
-# 🌐 Main App
+# 🌐 Streamlit UI
 def main():
     st.set_page_config(page_title="Resume Category Prediction", page_icon="📄", layout="wide")
     st.title("📄 Resume Category Prediction App")
@@ -112,7 +113,6 @@ def main():
     with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/194/194931.png", width=100)
         st.markdown("### Hello! Welcome to the Resume App 👋")
-
         st.markdown("---")
         menu_option = st.radio("📂 Choose a section:", [
             "Resume Analysis",
@@ -120,13 +120,11 @@ def main():
             "Career Booster Toolkit",
             "Multi-language Support (Coming Soon)"
         ])
-
         st.markdown("---")
         st.markdown("📌 Project by: [Subrav Bhande](https://github.com/subravbhande)")
         st.markdown("📁 [GitHub Repo](https://github.com/subravbhande/resume-predictor-app)")
         st.markdown("<center>Made with ❤️ for you</center>", unsafe_allow_html=True)
 
-        # Feedback Section
         with st.expander("📬 Give Feedback"):
             if "feedback_submitted" not in st.session_state:
                 st.session_state.feedback_submitted = False
@@ -134,14 +132,10 @@ def main():
             if not st.session_state.feedback_submitted:
                 st.markdown("### How would you rate the app?")
                 rating = st.radio("Your Rating:", ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"], index=None, horizontal=True)
-
-                liked_features = st.multiselect(
-                    "What did you like the most?",
-                    ["Resume Prediction", "UI Design", "Resume Tips", "Resume Builder Links", "Ease of Use"]
-                )
-
+                liked_features = st.multiselect("What did you like the most?", [
+                    "Resume Prediction", "UI Design", "Resume Tips", "Resume Builder Links", "Ease of Use"
+                ])
                 feedback_text = st.text_area("Any suggestions or feedback?")
-
                 if st.button("Send Feedback"):
                     if rating is None:
                         st.warning("⚠️ Please provide a rating.")
@@ -150,34 +144,26 @@ def main():
                     else:
                         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         with open("user_feedback.txt", "a", encoding="utf-8") as f:
-                            f.write(f"Time: {now}\n")
-                            f.write(f"Rating: {rating}\n")
-                            f.write(f"Liked: {', '.join(liked_features)}\n")
-                            f.write(f"Feedback: {feedback_text}\n")
-                            f.write("-" * 60 + "\n")
+                            f.write(f"Time: {now}\nRating: {rating}\nLiked: {', '.join(liked_features)}\n")
+                            f.write(f"Feedback: {feedback_text}\n{'-'*60}\n")
                         st.session_state.feedback_submitted = True
                         st.rerun()
             else:
                 st.success("🎉 Thank you! Your feedback has been submitted.")
 
-    # 🧾 Resume Analysis Section
+    # 🔍 Resume Analysis
     if menu_option == "Resume Analysis":
         st.subheader("📁 Upload your resume below")
         uploaded_file = st.file_uploader("Drag and drop your file here", type=["pdf", "docx", "txt"])
-
         if uploaded_file is not None:
             try:
                 resume_text = handle_file_upload(uploaded_file)
-
-                # 🚫 Check if document looks like a resume
                 if not is_valid_resume(resume_text):
                     st.error("🚫 This document doesn't appear to be a resume. Please upload a valid resume.")
                     return
-
                 category, cleaned_text = predict_category(resume_text)
                 tips = generate_resume_tips(resume_text)
                 score = score_resume(resume_text)
-
                 st.success("✅ Resume processed successfully!")
 
                 if st.checkbox("🔍 Show extracted resume text"):
@@ -199,10 +185,10 @@ def main():
                     'score': score,
                     'length': len(cleaned_text.split())
                 })
-
             except Exception as e:
                 st.error(f"❌ Error: {e}")
 
+    # 📊 Analytics
     elif menu_option == "Analytics Dashboard":
         st.subheader("📊 Resume Analytics Dashboard")
         data = st.session_state.resume_data
@@ -222,65 +208,62 @@ def main():
             st.bar_chart(df['length'], use_container_width=True)
         else:
             st.info("Upload at least one resume to see analytics.")
-elif menu_option == "Career Booster Toolkit":
-    st.subheader("🚀 Career Booster Toolkit")
-    st.markdown("Comprehensive resources to boost your career growth, learning, and visibility.")
 
-    # 🎓 Skill Development Platforms
-    with st.expander("🎓 Skill Development Platforms"):
-        st.markdown("- [Coursera](https://coursera.org)")
-        st.markdown("- [Udemy](https://udemy.com)")
-        st.markdown("- [LinkedIn Learning](https://linkedin.com/learning)")
-        st.markdown("- [Kaggle Courses](https://www.kaggle.com/learn)")
-        st.markdown("- [edX](https://edx.org)")
-        st.markdown("- [Great Learning](https://www.mygreatlearning.com/)")
-        st.markdown("- [Scaler Topics](https://www.scaler.com/topics/)")
-        st.markdown("- [freeCodeCamp](https://www.freecodecamp.org/)")
+    # 🧰 Career Booster Toolkit
+    elif menu_option == "Career Booster Toolkit":
+        st.subheader("🚀 Career Booster Toolkit")
+        st.markdown("Comprehensive resources to boost your career growth, learning, and visibility.")
 
-    # 📄 Resume Building Tools
-    with st.expander("📄 Resume Building Tools"):
-        st.markdown("- [Zety Resume Builder](https://zety.com/resume-builder)")
-        st.markdown("- [Canva Resume Templates](https://www.canva.com/resumes/)")
-        st.markdown("- [Novoresume](https://novoresume.com/)")
-        st.markdown("- [Kickresume](https://www.kickresume.com/)")
-        st.markdown("- [VisualCV](https://www.visualcv.com/)")
+        with st.expander("🎓 Skill Development Platforms"):
+            st.markdown("- [Coursera](https://coursera.org)")
+            st.markdown("- [Udemy](https://udemy.com)")
+            st.markdown("- [LinkedIn Learning](https://linkedin.com/learning)")
+            st.markdown("- [Kaggle Courses](https://www.kaggle.com/learn)")
+            st.markdown("- [edX](https://edx.org)")
+            st.markdown("- [Great Learning](https://www.mygreatlearning.com/)")
+            st.markdown("- [Scaler Topics](https://www.scaler.com/topics/)")
+            st.markdown("- [freeCodeCamp](https://www.freecodecamp.org/)")
 
-    # 🧭 Career Guidance Platforms
-    with st.expander("🧭 Career Guidance & Exploration"):
-        st.markdown("- [CareerExplorer](https://www.careerexplorer.com/)")
-        st.markdown("- [Truity Career Tests](https://www.truity.com/tests)")
-        st.markdown("- [Mindler](https://www.mindler.com/)")
-        st.markdown("- [MyNextMove](https://www.mynextmove.org/)")
+        with st.expander("📄 Resume Building Tools"):
+            st.markdown("- [Zety Resume Builder](https://zety.com/resume-builder)")
+            st.markdown("- [Canva Resume Templates](https://www.canva.com/resumes/)")
+            st.markdown("- [Novoresume](https://novoresume.com/)")
+            st.markdown("- [Kickresume](https://www.kickresume.com/)")
+            st.markdown("- [VisualCV](https://www.visualcv.com/)")
 
-    # 🤖 Mock Interview Platforms
-    with st.expander("🤖 Mock Interviews & Practice"):
-        st.markdown("- [Pramp](https://www.pramp.com/)")
-        st.markdown("- [Interviewing.io](https://interviewing.io/)")
-        st.markdown("- [Exercism](https://exercism.org/)")
-        st.markdown("- [LeetCode Interview Simulator](https://leetcode.com/interview/)")
-        st.markdown("- [HackerRank Interview Prep](https://www.hackerrank.com/interview/interview-preparation-kit)")
+        with st.expander("🧭 Career Guidance & Exploration"):
+            st.markdown("- [CareerExplorer](https://www.careerexplorer.com/)")
+            st.markdown("- [Truity Career Tests](https://www.truity.com/tests)")
+            st.markdown("- [Mindler](https://www.mindler.com/)")
+            st.markdown("- [MyNextMove](https://www.mynextmove.org/)")
 
-    # 🤝 Networking & Communities
-    with st.expander("🤝 Networking & Tech Communities"):
-        st.markdown("- [LinkedIn](https://linkedin.com)")
-        st.markdown("- [GitHub](https://github.com)")
-        st.markdown("- [Stack Overflow](https://stackoverflow.com/)")
-        st.markdown("- [Reddit: r/cscareerquestions](https://www.reddit.com/r/cscareerquestions/)")
-        st.markdown("- [Dev.to](https://dev.to/)")
+        with st.expander("🤖 Mock Interviews & Practice"):
+            st.markdown("- [Pramp](https://www.pramp.com/)")
+            st.markdown("- [Interviewing.io](https://interviewing.io/)")
+            st.markdown("- [Exercism](https://exercism.org/)")
+            st.markdown("- [LeetCode Interview Simulator](https://leetcode.com/interview/)")
+            st.markdown("- [HackerRank Interview Prep](https://www.hackerrank.com/interview/interview-preparation-kit)")
 
-    # 🧠 AI Career Enhancers
-    with st.expander("🧠 AI Career Enhancers"):
-        st.markdown("- [ChatGPT for Resume Tips](https://chat.openai.com)")
-        st.markdown("- [Rezi AI Resume Writer](https://www.rezi.ai/)")
-        st.markdown("- [Kickresume AI Resume Checker](https://www.kickresume.com/en/ai-resume-checker/)")
-        st.markdown("- [Skillate Resume Parser](https://skillate.com/)")
+        with st.expander("🤝 Networking & Tech Communities"):
+            st.markdown("- [LinkedIn](https://linkedin.com)")
+            st.markdown("- [GitHub](https://github.com)")
+            st.markdown("- [Stack Overflow](https://stackoverflow.com/)")
+            st.markdown("- [Reddit: r/cscareerquestions](https://www.reddit.com/r/cscareerquestions/)")
+            st.markdown("- [Dev.to](https://dev.to/)")
 
-    st.info("💡 Pro Tip: Bookmark and explore at least one resource from each section every week to stay ahead!")
+        with st.expander("🧠 AI Career Enhancers"):
+            st.markdown("- [ChatGPT for Resume Tips](https://chat.openai.com)")
+            st.markdown("- [Rezi AI Resume Writer](https://www.rezi.ai/)")
+            st.markdown("- [Kickresume AI Resume Checker](https://www.kickresume.com/en/ai-resume-checker/)")
+            st.markdown("- [Skillate Resume Parser](https://skillate.com/)")
 
+        st.info("💡 Pro Tip: Bookmark and explore at least one resource from each section every week!")
 
+    # 🌍 Coming Soon
     elif menu_option == "Multi-language Support (Coming Soon)":
         st.subheader("🌐 Multi-language Support")
         st.markdown("This feature is coming soon!")
 
+# 🚀 Run
 if __name__ == '__main__':
     main()

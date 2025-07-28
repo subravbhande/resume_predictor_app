@@ -96,7 +96,7 @@ svc_model = pickle.load(open('clf.pkl', 'rb'))
 le = pickle.load(open('encoder.pkl', 'rb'))
 
 def main():
-    st.set_page_config(page_title="Resume Category Prediction", layout="wide")
+    st.set_page_config(page_title="📄 Resume Category Prediction", layout="wide")
     st.title("Resume Category Prediction App")
 
     with st.sidebar:

@@ -97,7 +97,7 @@ le = pickle.load(open('encoder.pkl', 'rb'))
 
 def main():
     st.set_page_config(page_title="📄 Resume Category Prediction", layout="wide")
-    st.title("Resume Category Prediction App")
+    st.title("📄Resume Category Prediction App")
 
     with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/194/194931.png", width=100)
